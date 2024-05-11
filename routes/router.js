@@ -1,9 +1,10 @@
 import expres from 'express';
-import { addUser, homePage } from '../controllers/authControllers.js';
+import { addUser, getSingleUser, homePage } from '../controllers/authControllers.js';
 
 const router = expres.Router();
 
 router.get('/', homePage);
+router.get("/user/:id",getSingleUser)
 router.post("/add-user",addUser);
 
 
