@@ -17,6 +17,36 @@ const addUser = async (req, res) => {
   }
 };
 
+const loginUser = async (req, res) => {
+  try {
+    const user = req.body;
+    const isUser = await userCollection.findOne({ uid: user.uid });
+    if (isUser) {
+      const token = jwt.sign({ id: isUser.uid }, process.env.JWT_SECRET, {
+        expiresIn: "1h",
+      });
+
+      console.log({ token });
+
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      };
+
+      res
+        .cookie("token", token, cookieOptions)
+        .status(200)
+        .json({ message: "user logged in successfully" });
+    } else {
+      return res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(501).json({ message: error.message });
+  }
+};
+
 const getSingleUser = async (req, res) => {
   try {
     const id = req.params.id;
@@ -46,11 +76,11 @@ const addBook = async (req, res) => {
   }
 };
 
-const getSingleBook= async (req, res) => {
+const getSingleBook = async (req, res) => {
   try {
     const { id } = req.params;
     const filter = { _id: new ObjectId(id) };
-    const book= await booksCollection.findOne(filter);
+    const book = await booksCollection.findOne(filter);
     res.status(201).json(book);
   } catch (error) {
     console.log(error);
@@ -59,14 +89,21 @@ const getSingleBook= async (req, res) => {
 };
 
 const getAllCategory = async (req, res) => {
-    try {
-      const response = categoryCollection.find();
-      const categories = await response.toArray();
-      res.status(201).json(categories);
-    } catch (error) {
-      console.log(error);
-      res.status(501).json({ message: error.message });
-    }
-  };
+  try {
+    const response = categoryCollection.find();
+    const categories = await response.toArray();
+    res.status(201).json(categories);
+  } catch (error) {
+    console.log(error);
+    res.status(501).json({ message: error.message });
+  }
+};
 
-export { homePage, addUser, getSingleUser, addBook,getSingleBook,getAllCategory };
+export {
+  homePage,
+  addUser,
+  getSingleUser,
+  addBook,
+  getSingleBook,
+  getAllCategory,
+};

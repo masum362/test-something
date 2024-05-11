@@ -7,7 +7,7 @@ import run from "./db/connection.js";
 
 dotenv.config();
 
-const cookieConfig = {
+const corsConfig = {
   credentials: true,
   origin: [
     process.env.NODE_ENV === "production" ? "" : "http://localhost:5173",
@@ -15,7 +15,7 @@ const cookieConfig = {
 };
 
 const app = express();
-app.use(cors(cookieConfig));
+app.use(cors(corsConfig));
 app.use(cookieParser());
 app.use(express.json());
 app.use("/", router);
