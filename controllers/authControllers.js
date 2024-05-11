@@ -31,19 +31,31 @@ const getSingleUser = async (req, res) => {
 };
 
 const addBook = async (req, res) => {
-    try {
-      const book = req.body;
-  
-      console.log(post);
-      const response = await booksCollectionCollection.insertOne(book);
-  
-      console.log(response);
-      res.status(201).json({ response });
-    } catch (error) {
-      console.log(error);
-  
-      res.status(501).json({ message: error.message });
-    }
-  };
+  try {
+    const book = req.body;
 
-export { homePage, addUser,getSingleUser,addBook };
+    console.log(post);
+    const response = await booksCollectionCollection.insertOne(book);
+
+    console.log(response);
+    res.status(201).json({ response });
+  } catch (error) {
+    console.log(error);
+
+    res.status(501).json({ message: error.message });
+  }
+};
+
+const getSingleBook= async (req, res) => {
+  try {
+    const { id } = req.params;
+    const filter = { _id: new ObjectId(id) };
+    const book= await booksCollection.findOne(filter);
+    res.status(201).json(book);
+  } catch (error) {
+    console.log(error);
+    res.status(501).json({ message: error.message });
+  }
+};
+
+export { homePage, addUser, getSingleUser, addBook,getSingleBook };

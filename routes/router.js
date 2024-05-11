@@ -14,6 +14,7 @@ router.get("/user/:id", getSingleUser);
 router.post("/add-user", addUser);
 
 // books apis
-router.get("/add-book", addBook);
+router.get("/book/:id",getSingleBook);
+router.post("/add-book", addBook);
 
 export default router;
