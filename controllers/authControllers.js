@@ -1,4 +1,4 @@
-import { booksCollection } from "../db/connection.js";
+import { booksCollection, categoryCollection } from "../db/connection.js";
 
 const homePage = () => {
   console.log("homePage called");
@@ -58,4 +58,15 @@ const getSingleBook= async (req, res) => {
   }
 };
 
-export { homePage, addUser, getSingleUser, addBook,getSingleBook };
+const getAllCategory = async (req, res) => {
+    try {
+      const response = categoryCollection.find();
+      const categories = await response.toArray();
+      res.status(201).json(categories);
+    } catch (error) {
+      console.log(error);
+      res.status(501).json({ message: error.message });
+    }
+  };
+
+export { homePage, addUser, getSingleUser, addBook,getSingleBook,getAllCategory };

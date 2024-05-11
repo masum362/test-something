@@ -2,6 +2,7 @@ import expres from "express";
 import {
   addBook,
   addUser,
+  getAllCategory,
   getSingleUser,
   homePage,
 } from "../controllers/authControllers.js";
@@ -14,7 +15,10 @@ router.get("/user/:id", getSingleUser);
 router.post("/add-user", addUser);
 
 // books apis
-router.get("/book/:id",getSingleBook);
+router.get("/book/:id", getSingleBook);
 router.post("/add-book", addBook);
+
+// category apis
+router.get("/countries", getAllCategory);
 
 export default router;
