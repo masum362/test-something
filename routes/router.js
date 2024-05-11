@@ -3,6 +3,7 @@ import {
   addBook,
   addUser,
   getAllCategory,
+  getSingleBook,
   getSingleUser,
   homePage,
 } from "../controllers/authControllers.js";
