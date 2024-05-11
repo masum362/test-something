@@ -1,4 +1,5 @@
-import { booksCollection, categoryCollection } from "../db/connection.js";
+import { booksCollection, categoryCollection, usersCollection } from "../db/connection.js";
+import jwt from 'jsonwebtoken'
 
 const homePage = () => {
   console.log("homePage called");
@@ -8,9 +9,13 @@ const addUser = async (req, res) => {
   try {
     const user = req.body;
     console.log(user);
-    const response = await userCollection.insertOne(user);
+    const isUser =await usersCollection.findOne({uid: user.uid});
+    if(isUser){
+      return res.status(201).json({ message:"Already a user" });
+    }
+    const response = await usersCollection.insertOne(user);
     console.log(response);
-    res.status(201).json({ response });
+    return res.status(201).json({ response });
   } catch (error) {
     console.log(error);
     res.status(501).json({ message: error.message });
@@ -18,9 +23,10 @@ const addUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
+  console.log("called")
   try {
     const user = req.body;
-    const isUser = await userCollection.findOne({ uid: user.uid });
+    const isUser = await usersCollection.findOne({ uid: user.uid });
     if (isUser) {
       const token = jwt.sign({ id: isUser.uid }, process.env.JWT_SECRET, {
         expiresIn: "1h",
@@ -51,7 +57,7 @@ const getSingleUser = async (req, res) => {
   try {
     const id = req.params.id;
     console.log(id);
-    const user = await userCollection.findOne({ uid: id });
+    const user = await usersCollection.findOne({ uid: id });
     console.log(user);
     res.status(201).json(user);
   } catch (error) {
@@ -102,6 +108,7 @@ const getAllCategory = async (req, res) => {
 export {
   homePage,
   addUser,
+  loginUser,
   getSingleUser,
   addBook,
   getSingleBook,

@@ -6,6 +6,7 @@ import {
   getSingleBook,
   getSingleUser,
   homePage,
+  loginUser,
 } from "../controllers/authControllers.js";
 
 const router = expres.Router();
@@ -14,6 +15,7 @@ const router = expres.Router();
 router.get("/", homePage);
 router.get("/user/:id", getSingleUser);
 router.post("/add-user", addUser);
+router.post("/login",loginUser)
 
 // books apis
 router.get("/book/:id", getSingleBook);
