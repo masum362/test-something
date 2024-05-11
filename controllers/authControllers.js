@@ -1,3 +1,5 @@
+import { booksCollection } from "../db/connection.js";
+
 const homePage = () => {
   console.log("homePage called");
 };
@@ -28,4 +30,20 @@ const getSingleUser = async (req, res) => {
   }
 };
 
-export { homePage, addUser,getSingleUser };
+const addBook = async (req, res) => {
+    try {
+      const book = req.body;
+  
+      console.log(post);
+      const response = await booksCollectionCollection.insertOne(book);
+  
+      console.log(response);
+      res.status(201).json({ response });
+    } catch (error) {
+      console.log(error);
+  
+      res.status(501).json({ message: error.message });
+    }
+  };
+
+export { homePage, addUser,getSingleUser,addBook };
