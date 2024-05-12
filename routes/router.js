@@ -3,6 +3,7 @@ import {
   addBook,
   addUser,
   getAllCategory,
+  getAvailableBooks,
   getBooks,
   getSingleBook,
   getSingleUser,
@@ -23,6 +24,7 @@ router.get("/logout", auth, logoutUser);
 
 // books apis
 router.get("/books", getBooks);
+router.get("/available-books", getAvailableBooks);
 router.get("/book/:id", auth, getSingleBook);
 router.post("/add-book", auth, addBook);
 
