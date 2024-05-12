@@ -1,5 +1,9 @@
-import { booksCollection, categoryCollection, usersCollection } from "../db/connection.js";
-import jwt from 'jsonwebtoken'
+import {
+  booksCollection,
+  categoryCollection,
+  usersCollection,
+} from "../db/connection.js";
+import jwt from "jsonwebtoken";
 
 const homePage = () => {
   console.log("homePage called");
@@ -9,11 +13,18 @@ const addUser = async (req, res) => {
   try {
     const user = req.body;
     console.log(user);
-    const isUser =await usersCollection.findOne({uid: user.uid});
-    if(isUser){
-      return res.status(201).json({ message:"Already a user" });
+    const isUser = await usersCollection.findOne({ uid: user.uid });
+    if (isUser) {
+      return res.status(201).json({ message: "Already a user" });
     }
-    const response = await usersCollection.insertOne(user);
+    const response = await usersCollection.insertOne(
+      {
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        email: user.email ? user.email :"",
+        uid: user.uid,
+      }
+    );
     console.log(response);
     return res.status(201).json({ response });
   } catch (error) {
@@ -23,7 +34,7 @@ const addUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-  console.log("called")
+  console.log("called");
   try {
     const user = req.body;
     const isUser = await usersCollection.findOne({ uid: user.uid });
@@ -53,6 +64,17 @@ const loginUser = async (req, res) => {
   }
 };
 
+const logoutUser =(req ,res) => {
+  try {
+    res.clearCookie("token").status(201).json({message:"user logged out"});  
+  } catch (error) {
+    res.status(501).json({ message: error.message });
+
+  }
+}
+
+
+
 const getSingleUser = async (req, res) => {
   try {
     const id = req.params.id;
@@ -70,11 +92,24 @@ const addBook = async (req, res) => {
   try {
     const book = req.body;
 
-    console.log(post);
+    console.log(book);
     const response = await booksCollectionCollection.insertOne(book);
 
     console.log(response);
     res.status(201).json({ response });
+  } catch (error) {
+    console.log(error);
+
+    res.status(501).json({ message: error.message });
+  }
+};
+
+const getBooks = async (req, res) => {
+  try {
+    const response = booksCollectionCollection.find({});
+    const books = await response.toArray();
+    console.log(books);
+    res.status(201).json({ books });
   } catch (error) {
     console.log(error);
 
@@ -109,7 +144,9 @@ export {
   homePage,
   addUser,
   loginUser,
+  logoutUser,
   getSingleUser,
+  getBooks,
   addBook,
   getSingleBook,
   getAllCategory,

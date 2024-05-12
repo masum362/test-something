@@ -3,23 +3,28 @@ import {
   addBook,
   addUser,
   getAllCategory,
+  getBooks,
   getSingleBook,
   getSingleUser,
   homePage,
   loginUser,
+  logoutUser,
 } from "../controllers/authControllers.js";
+import auth from "../middleware/privateRoute.js";
 
 const router = expres.Router();
 
 // users apis
 router.get("/", homePage);
-router.get("/user/:id", getSingleUser);
+router.get("/user/:id", auth, getSingleUser);
 router.post("/add-user", addUser);
-router.post("/login",loginUser)
+router.post("/login", loginUser);
+router.get("/logout", auth, logoutUser);
 
 // books apis
-router.get("/book/:id", getSingleBook);
-router.post("/add-book", addBook);
+router.get("/books", getBooks);
+router.get("/book/:id", auth, getSingleBook);
+router.post("/add-book", auth, addBook);
 
 // category apis
 router.get("/countries", getAllCategory);
