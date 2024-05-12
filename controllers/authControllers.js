@@ -93,7 +93,9 @@ const addBook = async (req, res) => {
     const book = req.body;
 
     console.log(book);
-    const response = await booksCollectionCollection.insertOne(book);
+    const response = await booksCollection.insertOne({
+      ...book,uid:req.userId,
+    });
 
     console.log(response);
     res.status(201).json({ response });
