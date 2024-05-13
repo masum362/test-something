@@ -13,7 +13,8 @@ import {
   getBorrowedBooks,
   addBorrowedBook,
   returnBorrowedBook,
-  getCategoryBooks
+  getCategoryBooks,
+  updateBook
 } from "../controllers/authControllers.js";
 import auth from "../middleware/privateRoute.js";
 
@@ -31,6 +32,7 @@ router.get("/books", getBooks);
 router.get("/available-books", getAvailableBooks);
 router.get("/book/:id", auth, getSingleBook);
 router.post("/add-book", auth, addBook);
+router.patch("/update-book/:id",auth,updateBook)
 
 // borrowed books
 router.get("/borrowed-books", auth, getBorrowedBooks);

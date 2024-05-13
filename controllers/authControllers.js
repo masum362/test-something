@@ -8,95 +8,6 @@ import {
 import jwt from "jsonwebtoken";
 
 const homePage = async (req, res) => {
-  const categories = [
-    {
-      imageUrl:
-        "https://i.ibb.co/gShtRqd/uriel-soberanes-Mx-Vk-WPi-JALs-unsplash.jpg",
-      title: "Fiction",
-    },
-    {
-      imageUrl:
-        "https://i.ibb.co/v1X7Mcm/uriel-soberanes-Mx-Vk-WPi-JALs-unsplash.jpg",
-      title: "Science",
-    },
-    {
-      imageUrl:
-        "https://i.ibb.co/p3F2kkS/mads-schmidt-rasmussen-v0-PWN7-Z38ag-unsplash.jpg",
-      title: "Mystery",
-    },
-    {
-      imageUrl: "https://i.ibb.co/kS2chMw/photo-1551887373-6edba6dacbb1.jpg",
-      title: "Children",
-    },
-
-    {
-      imageUrl:
-        "https://i.ibb.co/S00MRpv/71hq-WFOi-Fi-L-AC-UF1000-1000-QL80.jpg",
-      title: "Drama",
-    },
-    {
-      imageUrl:
-        "https://i.ibb.co/RNyyHMN/Must-Read-Non-Fiction-Books-for-Students-683x1024.jpg",
-      title: "Non-Fic",
-    },
-    {
-      imageUrl: "https://i.ibb.co/Y2Q6RwL/sci-fi-1647637695.jpg",
-      title: "Sci-Fic",
-    },
-    {
-      imageUrl:
-        "https://i.ibb.co/6XXt4yc/beautiful-medieval-fantasy-landscape-with-city-23-2150916260.jpg",
-      title: "Fantasy",
-    },
-
-    {
-      imageUrl:
-        "https://i.ibb.co/MMmkZh4/1-best-thriller-books-index-comp-649d9b68c3157.jpg",
-      title: "Thriller",
-    },
-
-    {
-      imageUrl: "https://i.ibb.co/bFHXykv/best-romance-books-1673379672.jpg",
-      title: "Romance",
-    },
-    {
-      imageUrl:
-        "https://i.ibb.co/sVRTk54/A14-VAyv-Ys-TL-AC-UF894-1000-QL80.jpg",
-      title: "History",
-    },
-
-    {
-      imageUrl: "https://i.ibb.co/dPk7pnk/index2-1-1669823970.jpg",
-      title: "Biography",
-    },
-    {
-      imageUrl: "https://i.ibb.co/bbYwsk4/photo-1618365908648-e71bd5716cba.jpg",
-      title: "Self-Help",
-    },
-
-    {
-      imageUrl: "https://i.ibb.co/37YnVMy/1-480.jpg",
-      title: "Art",
-    },
-
-    {
-      imageUrl:
-        "https://i.ibb.co/866CQv3/The-Dairy-Book-Of-Home-Cookery-06.jpg",
-      title: "Food-Cooking",
-    },
-
-    {
-      imageUrl: "https://i.ibb.co/XCDJSJT/unnamed.png",
-      title: "Travel",
-    },
-    {
-      imageUrl:
-        "https://i.ibb.co/WWPnvYG/everything-you-need-know-about-fitness-1440x810.jpg",
-      title: "Health-Fitness",
-    },
-  ];
-
-  await categoryCollection.insertMany(categories);
   console.log("homePage called");
 };
 
@@ -115,7 +26,7 @@ const addUser = async (req, res) => {
       uid: user.uid,
     });
     console.log(response);
-    return res.status(201).json({ response });
+    return res.status(201).json({ response ,message:"user added successfully"});
   } catch (error) {
     console.log(error);
     res.status(501).json({ message: error.message });
@@ -185,7 +96,31 @@ const addBook = async (req, res) => {
     });
 
     console.log(response);
-    res.status(201).json({ response });
+    res.status(201).json({ response,message:"book added successfully" });
+  } catch (error) {
+    console.log(error);
+
+    res.status(501).json({ message: error.message });
+  }
+};
+
+const updateBook = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const book = req.body;
+
+    console.log({id , book});
+    const filter = { _id: new ObjectId(id) };
+    const updatedBook = {
+      $set: {
+        ...book,
+      },
+    };
+    const response = await booksCollection.updateOne(filter,updatedBook);
+
+
+    console.log(response);
+    res.status(201).json({ response,message:"book updated successfully" });
   } catch (error) {
     console.log(error);
 
@@ -238,6 +173,7 @@ const getAvailableBooks = async (req, res) => {
 const getSingleBook = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log({id});
     const filter = { _id: new ObjectId(id) };
     const book = await booksCollection.findOne(filter);
     res.status(201).json(book);
@@ -354,6 +290,7 @@ export {
   getCategoryBooks,
   getAvailableBooks,
   addBook,
+  updateBook,
   getSingleBook,
   getAllCategory,
   getBorrowedBooks,
