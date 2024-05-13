@@ -31,12 +31,12 @@ router.get("/available-books", getAvailableBooks);
 router.get("/book/:id", auth, getSingleBook);
 router.post("/add-book", auth, addBook);
 
-// category apis
-router.get("/countries", getAllCategory);
-
 // borrowed books
 router.get("/borrowed-books", auth, getBorrowedBooks);
 router.put("/return-borrowed-book/:id", auth, returnBorrowedBook);
 router.post("/add-borrowed-books", auth, addBorrowedBook);
+
+// categories api
+router.get('/categories',getAllCategory)
 
 export default router;
