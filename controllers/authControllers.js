@@ -28,14 +28,15 @@ const homePage = async (req, res) => {
       imageUrl: "https://i.ibb.co/kS2chMw/photo-1551887373-6edba6dacbb1.jpg",
       title: "Children",
     },
-   
 
     {
-      imageUrl: "https://i.ibb.co/S00MRpv/71hq-WFOi-Fi-L-AC-UF1000-1000-QL80.jpg",
+      imageUrl:
+        "https://i.ibb.co/S00MRpv/71hq-WFOi-Fi-L-AC-UF1000-1000-QL80.jpg",
       title: "Drama",
     },
     {
-      imageUrl: "https://i.ibb.co/RNyyHMN/Must-Read-Non-Fiction-Books-for-Students-683x1024.jpg",
+      imageUrl:
+        "https://i.ibb.co/RNyyHMN/Must-Read-Non-Fiction-Books-for-Students-683x1024.jpg",
       title: "Non-Fic",
     },
     {
@@ -43,24 +44,27 @@ const homePage = async (req, res) => {
       title: "Sci-Fic",
     },
     {
-      imageUrl: "https://i.ibb.co/6XXt4yc/beautiful-medieval-fantasy-landscape-with-city-23-2150916260.jpg",
+      imageUrl:
+        "https://i.ibb.co/6XXt4yc/beautiful-medieval-fantasy-landscape-with-city-23-2150916260.jpg",
       title: "Fantasy",
     },
-   
+
     {
-      imageUrl: "https://i.ibb.co/MMmkZh4/1-best-thriller-books-index-comp-649d9b68c3157.jpg",
+      imageUrl:
+        "https://i.ibb.co/MMmkZh4/1-best-thriller-books-index-comp-649d9b68c3157.jpg",
       title: "Thriller",
     },
-   
+
     {
       imageUrl: "https://i.ibb.co/bFHXykv/best-romance-books-1673379672.jpg",
       title: "Romance",
     },
     {
-      imageUrl: "https://i.ibb.co/sVRTk54/A14-VAyv-Ys-TL-AC-UF894-1000-QL80.jpg",
+      imageUrl:
+        "https://i.ibb.co/sVRTk54/A14-VAyv-Ys-TL-AC-UF894-1000-QL80.jpg",
       title: "History",
     },
-   
+
     {
       imageUrl: "https://i.ibb.co/dPk7pnk/index2-1-1669823970.jpg",
       title: "Biography",
@@ -69,28 +73,28 @@ const homePage = async (req, res) => {
       imageUrl: "https://i.ibb.co/bbYwsk4/photo-1618365908648-e71bd5716cba.jpg",
       title: "Self-Help",
     },
-   
+
     {
       imageUrl: "https://i.ibb.co/37YnVMy/1-480.jpg",
       title: "Art",
     },
-   
+
     {
-      imageUrl: "https://i.ibb.co/866CQv3/The-Dairy-Book-Of-Home-Cookery-06.jpg",
+      imageUrl:
+        "https://i.ibb.co/866CQv3/The-Dairy-Book-Of-Home-Cookery-06.jpg",
       title: "Food-Cooking",
     },
-   
+
     {
       imageUrl: "https://i.ibb.co/XCDJSJT/unnamed.png",
       title: "Travel",
     },
     {
-      imageUrl: "https://i.ibb.co/WWPnvYG/everything-you-need-know-about-fitness-1440x810.jpg",
+      imageUrl:
+        "https://i.ibb.co/WWPnvYG/everything-you-need-know-about-fitness-1440x810.jpg",
       title: "Health-Fitness",
     },
-   
   ];
-
 
   await categoryCollection.insertMany(categories);
   console.log("homePage called");
@@ -201,6 +205,20 @@ const getBooks = async (req, res) => {
     res.status(501).json({ message: error.message });
   }
 };
+const getCategoryBooks = async (req, res) => {
+  const categoryName = req.params.id;
+  console.log("category:", categoryName);
+  try {
+    const response = booksCollection.find({ Category: categoryName });
+    const books = await response.toArray();
+    console.log(books);
+    res.status(201).json({ books });
+  } catch (error) {
+    console.log(error);
+
+    res.status(501).json({ message: error.message });
+  }
+};
 
 const getAvailableBooks = async (req, res) => {
   try {
@@ -271,7 +289,7 @@ const addBorrowedBook = async (req, res) => {
       uid,
       bookId: new ObjectId(borrowedBooks.bookId),
     });
-    console.log({isAlreadyBorrowed})
+    console.log({ isAlreadyBorrowed });
     if (isAlreadyBorrowed) {
       return res.status(208).json({ message: "book already borrowed" });
     }
@@ -333,11 +351,12 @@ export {
   logoutUser,
   getSingleUser,
   getBooks,
+  getCategoryBooks,
   getAvailableBooks,
   addBook,
   getSingleBook,
   getAllCategory,
   getBorrowedBooks,
   addBorrowedBook,
-  returnBorrowedBook
+  returnBorrowedBook,
 };

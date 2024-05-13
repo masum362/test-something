@@ -13,6 +13,7 @@ import {
   getBorrowedBooks,
   addBorrowedBook,
   returnBorrowedBook,
+  getCategoryBooks
 } from "../controllers/authControllers.js";
 import auth from "../middleware/privateRoute.js";
 
@@ -38,5 +39,6 @@ router.post("/add-borrowed-books", auth, addBorrowedBook);
 
 // categories api
 router.get('/categories',getAllCategory)
+router.get('/category/:id',getCategoryBooks)
 
 export default router;
