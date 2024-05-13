@@ -1,9 +1,7 @@
-
 import dotenv from "dotenv";
 dotenv.config();
 
 import { MongoClient, ServerApiVersion } from "mongodb";
-
 
 const url = process.env.MONGODBURL;
 const client = new MongoClient(url, {
@@ -17,6 +15,7 @@ const db = client.db("AcademyCloudDB");
 const usersCollection = db.collection("users");
 const categoryCollection = db.collection("categories");
 const booksCollection = db.collection("books");
+const borrowedBooksCollection = db.collection("borrowedBooks");
 
 async function run() {
   try {
@@ -30,6 +29,11 @@ async function run() {
   }
 }
 
-export { usersCollection, categoryCollection, booksCollection };
+export {
+  usersCollection,
+  categoryCollection,
+  booksCollection,
+  borrowedBooksCollection,
+};
 
 export default run;

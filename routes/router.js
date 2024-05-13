@@ -10,6 +10,9 @@ import {
   homePage,
   loginUser,
   logoutUser,
+  getBorrowedBooks,
+  addBorrowedBook,
+  returnBorrowedBook,
 } from "../controllers/authControllers.js";
 import auth from "../middleware/privateRoute.js";
 
@@ -30,5 +33,10 @@ router.post("/add-book", auth, addBook);
 
 // category apis
 router.get("/countries", getAllCategory);
+
+// borrowed books
+router.get("/borrowed-books", auth, getBorrowedBooks);
+router.put("/return-borrowed-book/:id", auth, returnBorrowedBook);
+router.post("/add-borrowed-books", auth, addBorrowedBook);
 
 export default router;

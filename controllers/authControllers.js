@@ -1,88 +1,13 @@
+import { ObjectId } from "mongodb";
 import {
   booksCollection,
+  borrowedBooksCollection,
   categoryCollection,
   usersCollection,
 } from "../db/connection.js";
 import jwt from "jsonwebtoken";
 
 const homePage = async (req, res) => {
-  const data = [
-    {
-      photoURL: "https://i.ibb.co/w0m22Sq/45047384.jpg",
-      name: "The House in the Cerulean Sea",
-      quantity: 5,
-      author: "T.J. Klune",
-      Category: "Fiction",
-      short_description:
-        "A heartwarming story about a case worker who visits magical orphanages.",
-      rating: 4.5,
-      content:
-        "A charming and whimsical novel that will leave you feeling hopeful and optimistic.",
-    },
-    {
-      photoURL: "https://i.ibb.co/K5VjPHp/54493401.jpg",
-      name: "Project Hail Mary",
-      quantity: 3,
-      author: "Andy Weir",
-      Category: "Sci-Fi",
-      short_description:
-        "An amnesiac astronaut wakes up on a spaceship with no memory of his mission.",
-      rating: 4.8,
-      content:
-        "A thrilling and suspenseful sci-fi adventure that will keep you guessing until the very end.",
-    },
-    {
-      photoURL:
-        "https://i.ibb.co/xXKSrC2/91-ORNIo99-SL-AC-UF1000-1000-QL80.jpg",
-      name: "Atlas of the Heart",
-      quantity: 2,
-      author: "Brené Brown",
-      Category: "Non-Fiction",
-      short_description: "Explores the complex emotions that define our lives.",
-      rating: 4.2,
-      content:
-        "A thought-provoking and insightful exploration of human emotions.",
-    },
-    {
-      photoURL:
-        "https://i.ibb.co/W3DgKgD/81ij-POty-W7-L-AC-UF1000-1000-QL80-Dp-Weblab.jpg",
-      name: "Lightyears",
-      quantity: 7,
-      author: "Claudia Gray",
-      Category: "Sci-Fi",
-      short_description:
-        "A young woman signs up for a faster-than-light colonization mission.",
-      rating: 4.0,
-      content:
-        "A captivating and imaginative sci-fi novel that explores the themes of identity and belonging.",
-    },
-    {
-      photoURL: "https://i.ibb.co/QdCB5S8/52578297.jpg",
-      name: "The Midnight Library",
-      quantity: 1,
-      author: "Matt Haig",
-      Category: "Fantasy",
-      short_description:
-        "A woman on the verge of ending her life finds herself in a library of alternate realities.",
-      rating: 4.7,
-      content:
-        "A moving and thought-provoking exploration of life, death, and regret.",
-    },
-    {
-      photoURL: "https://i.ibb.co/HPJgxRW/81g5-LETk1z-L-UX250.jpg",
-      name: "Born a Crime",
-      quantity: 8,
-      author: "Trevor Noah",
-      Category: "Biography",
-      short_description:
-        "The comedian tells the story of his childhood growing up in South Africa during apartheid.",
-      rating: 4.3,
-      content: "A powerful and inspiring memoir about overcoming adversity.",
-    },
-  ];
-
-  const response = await booksCollection.insertMany(data);
-  res.send(response);
   console.log("homePage called");
 };
 
@@ -230,6 +155,92 @@ const getAllCategory = async (req, res) => {
   }
 };
 
+const getBorrowedBooks = async (req, res) => {
+  try {
+    const uid = req.userId;
+    const books = await borrowedBooksCollection
+      .aggregate([
+        {
+          $lookup: {
+            from: "books",
+            localField: "bookId",
+            foreignField: "_id",
+            as: "BooksDetails",
+          },
+        },
+      ])
+      .toArray();
+
+    res.status(201).json({ books });
+  } catch (error) {
+    console.log(error);
+
+    res.status(501).json({ message: error.message });
+  }
+};
+const addBorrowedBook = async (req, res) => {
+  try {
+    const uid = req.userId;
+    const borrowedBooks = req.body;
+    const isAlreadyBorrowed = await borrowedBooksCollection.findOne({
+      uid,
+      bookId: new ObjectId(borrowedBooks.bookId),
+    });
+    console.log({isAlreadyBorrowed})
+    if (isAlreadyBorrowed) {
+      return res.status(208).json({ message: "book already borrowed" });
+    }
+
+    const isAlreadyBorrowerThreeBook = await borrowedBooksCollection
+      .aggregate([{ $match: { uid: uid } }])
+      .toArray();
+
+    if (isAlreadyBorrowerThreeBook.length >= 3) {
+      return res
+        .status(203)
+        .json({ message: " you already borrowed maximize books" });
+    }
+
+    const quantityResponse = await booksCollection.updateOne(
+      { _id: new ObjectId(borrowedBooks.bookId) },
+      {
+        $inc: { quantity: -1 },
+      }
+    );
+
+    const borrowBookAddedResponse = await borrowedBooksCollection.insertOne({
+      uid: borrowedBooks.uid,
+      displayName: borrowedBooks.displayName,
+      borrowedDate: borrowedBooks.borrowed_Date,
+      returnDate: borrowedBooks.return_Date,
+      bookId: new ObjectId(borrowedBooks.bookId),
+    });
+    console.log({ quantityResponse, borrowBookAddedResponse });
+    return res.status(201).json(borrowBookAddedResponse);
+  } catch (error) {
+    console.log(error);
+
+    res.status(501).json({ message: error.message });
+  }
+};
+
+const returnBorrowedBook = async (req, res) => {
+  try {
+    const bookId = req.params.id;
+
+    await borrowedBooksCollection.deleteOne({ bookId: new ObjectId(bookId) });
+
+    const response = await booksCollection.updateOne(
+      { _id: new ObjectId(bookId) },
+      { $inc: { quantity: 1 } }
+    );
+    console.log(response);
+    return res.status(201).json({ message: "book returned successfully" });
+  } catch (error) {
+    res.status(501).json({ message: error.message });
+  }
+};
+
 export {
   homePage,
   addUser,
@@ -241,4 +252,7 @@ export {
   addBook,
   getSingleBook,
   getAllCategory,
+  getBorrowedBooks,
+  addBorrowedBook,
+  returnBorrowedBook
 };
