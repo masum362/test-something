@@ -7,9 +7,18 @@ import {
 } from "../db/connection.js";
 import jwt from "jsonwebtoken";
 
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+};
+
+
 const homePage = async (req, res) => {
   console.log("homePage called");
 };
+
+
 
 const addUser = async (req, res) => {
   try {
@@ -26,7 +35,9 @@ const addUser = async (req, res) => {
       uid: user.uid,
     });
     console.log(response);
-    return res.status(201).json({ response ,message:"user added successfully"});
+    return res
+      .status(201)
+      .json({ response, message: "user added successfully" });
   } catch (error) {
     console.log(error);
     res.status(501).json({ message: error.message });
@@ -45,12 +56,6 @@ const loginUser = async (req, res) => {
 
       console.log({ token });
 
-      const cookieOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-      };
-
       res
         .cookie("token", token, cookieOptions)
         .status(200)
@@ -66,7 +71,10 @@ const loginUser = async (req, res) => {
 
 const logoutUser = (req, res) => {
   try {
-    res.clearCookie("token").status(201).json({ message: "user logged out" });
+    res
+      .clearCookie("token", { ...cookieOptions, maxAge: 0 })
+      .status(201)
+      .json({ message: "user logged out" });
   } catch (error) {
     res.status(501).json({ message: error.message });
   }
@@ -96,7 +104,7 @@ const addBook = async (req, res) => {
     });
 
     console.log(response);
-    res.status(201).json({ response,message:"book added successfully" });
+    res.status(201).json({ response, message: "book added successfully" });
   } catch (error) {
     console.log(error);
 
@@ -109,18 +117,17 @@ const updateBook = async (req, res) => {
     const id = req.params.id;
     const book = req.body;
 
-    console.log({id , book});
+    console.log({ id, book });
     const filter = { _id: new ObjectId(id) };
     const updatedBook = {
       $set: {
         ...book,
       },
     };
-    const response = await booksCollection.updateOne(filter,updatedBook);
-
+    const response = await booksCollection.updateOne(filter, updatedBook);
 
     console.log(response);
-    res.status(201).json({ response,message:"book updated successfully" });
+    res.status(201).json({ response, message: "book updated successfully" });
   } catch (error) {
     console.log(error);
 
@@ -173,7 +180,7 @@ const getAvailableBooks = async (req, res) => {
 const getSingleBook = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log({id});
+    console.log({ id });
     const filter = { _id: new ObjectId(id) };
     const book = await booksCollection.findOne(filter);
     res.status(201).json(book);
