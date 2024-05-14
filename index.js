@@ -10,7 +10,9 @@ dotenv.config();
 const corsConfig = {
   credentials: true,
   origin: [
-    process.env.NODE_ENV === "production" ? "https://academycloud-6112d.web.app" : "http://localhost:5173",
+    process.env.NODE_ENV === "production"
+      ? ["https://academycloud-6112d.web.app", "http://localhost:5173"]
+      : ["https://academycloud-6112d.web.app", "http://localhost:5173"],
   ],
 };
 

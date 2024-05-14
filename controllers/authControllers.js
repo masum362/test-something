@@ -54,7 +54,7 @@ const loginUser = async (req, res) => {
         expiresIn: "1h",
       });
 
-      console.log({ token });
+      console.log('inside from login user',token);
 
       res
         .cookie("token", token, cookieOptions)
