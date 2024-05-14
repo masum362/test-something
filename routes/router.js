@@ -21,7 +21,6 @@ import auth from "../middleware/privateRoute.js";
 const router = expres.Router();
 
 // users apis
-router.get("/", homePage);
 router.get("/user/:id", auth, getSingleUser);
 router.post("/add-user", addUser);
 router.post("/login", loginUser);
