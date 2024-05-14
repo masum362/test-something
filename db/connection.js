@@ -11,6 +11,9 @@ const client = new MongoClient(url, {
     deprecationErrors: true,
   },
 });
+
+
+
 const db = client.db("AcademyCloudDB");
 const usersCollection = db.collection("users");
 const categoryCollection = db.collection("categories");
@@ -20,7 +23,7 @@ const borrowedBooksCollection = db.collection("borrowedBooks");
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    // await client.connect();
+    await client.connect();
     // Send a ping to confirm a successful connection
     //  const response =  await client.db("admin").command({ ping: 1 });
     console.log("successfully connected database");

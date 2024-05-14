@@ -28,8 +28,8 @@ router.post("/login", loginUser);
 router.get("/logout", auth, logoutUser);
 
 // books apis
-router.get("/books", getBooks);
-router.get("/available-books", getAvailableBooks);
+router.get("/books",auth, getBooks);
+router.get("/available-books",auth, getAvailableBooks);
 router.get("/book/:id", auth, getSingleBook);
 router.post("/add-book", auth, addBook);
 router.patch("/update-book/:id",auth,updateBook)
@@ -41,6 +41,6 @@ router.post("/add-borrowed-books", auth, addBorrowedBook);
 
 // categories api
 router.get('/categories',getAllCategory)
-router.get('/category/:id',getCategoryBooks)
+router.get('/category/:id',auth,getCategoryBooks)
 
 export default router;
