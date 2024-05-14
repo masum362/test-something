@@ -10,7 +10,7 @@ dotenv.config();
 const corsConfig = {
   credentials: true,
   origin: [
-    process.env.NODE_ENV === "production" ? "" : "http://localhost:5173",
+    process.env.NODE_ENV === "production" ? "http://localhost:5173" : "http://localhost:5173",
   ],
 };
 
