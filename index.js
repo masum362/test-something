@@ -20,6 +20,7 @@ const app = express();
 app.use(cors(corsConfig));
 app.use(cookieParser());
 app.use(express.json());
+
 app.use("/", router);
 
 const port = process.env.PORT || 3000;

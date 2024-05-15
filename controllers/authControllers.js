@@ -13,12 +13,9 @@ const cookieOptions = {
   sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
 };
 
-
 const homePage = async (req, res) => {
   console.log("homePage called");
 };
-
-
 
 const addUser = async (req, res) => {
   try {
@@ -54,7 +51,7 @@ const loginUser = async (req, res) => {
         expiresIn: "1h",
       });
 
-      console.log('inside from login user',token);
+      console.log("inside from login user", token);
 
       res
         .cookie("token", token, cookieOptions)
@@ -116,6 +113,7 @@ const updateBook = async (req, res) => {
   try {
     const id = req.params.id;
     const book = req.body;
+    console.log(book);
 
     console.log({ id, book });
     const filter = { _id: new ObjectId(id) };
@@ -228,41 +226,50 @@ const addBorrowedBook = async (req, res) => {
   try {
     const uid = req.userId;
     const borrowedBooks = req.body;
-    const isAlreadyBorrowed = await borrowedBooksCollection.findOne({
-      uid,
-      bookId: new ObjectId(borrowedBooks.bookId),
-    });
-    console.log({ isAlreadyBorrowed });
-    if (isAlreadyBorrowed) {
-      return res.status(208).json({ message: "book already borrowed" });
-    }
 
-    const isAlreadyBorrowerThreeBook = await borrowedBooksCollection
-      .aggregate([{ $match: { uid: uid } }])
+    const userBorrowedBooks = await borrowedBooksCollection
+      .find({ uid })
       .toArray();
 
-    if (isAlreadyBorrowerThreeBook.length >= 3) {
+    console.log({ userBorrowedBooks });
+
+    console.log('length',userBorrowedBooks.length);
+
+    if (userBorrowedBooks.length >= 3) {
+      console.log("inside from userborrowded 3 books condition");
       return res
         .status(203)
         .json({ message: " you already borrowed maximize books" });
-    }
+    } else {
+      const isAlreadyBorrowed = await borrowedBooksCollection.findOne({
+        uid,
+        bookId: new ObjectId(borrowedBooks.bookId),
+      });
+      console.log({ isAlreadyBorrowed });
+      if (isAlreadyBorrowed) {
+        return res.status(208).json({ message: "book already borrowed" });
+      } else {
+        const quantityResponse = await booksCollection.updateOne(
+          { _id: new ObjectId(borrowedBooks.bookId) },
+          {
+            $inc: { quantity: -1 },
+          }
+        );
 
-    const quantityResponse = await booksCollection.updateOne(
-      { _id: new ObjectId(borrowedBooks.bookId) },
-      {
-        $inc: { quantity: -1 },
+        const borrowBookAddedResponse = await borrowedBooksCollection.insertOne(
+          {
+            uid: borrowedBooks.uid,
+            displayName: borrowedBooks.displayName,
+            borrowedDate: borrowedBooks.borrowed_Date,
+            returnDate: borrowedBooks.return_Date,
+            bookId: new ObjectId(borrowedBooks.bookId),
+          }
+        );
+
+        console.log({ quantityResponse, borrowBookAddedResponse });
+        return res.status(201).json(borrowBookAddedResponse);
       }
-    );
-
-    const borrowBookAddedResponse = await borrowedBooksCollection.insertOne({
-      uid: borrowedBooks.uid,
-      displayName: borrowedBooks.displayName,
-      borrowedDate: borrowedBooks.borrowed_Date,
-      returnDate: borrowedBooks.return_Date,
-      bookId: new ObjectId(borrowedBooks.bookId),
-    });
-    console.log({ quantityResponse, borrowBookAddedResponse });
-    return res.status(201).json(borrowBookAddedResponse);
+    }
   } catch (error) {
     console.log(error);
 
